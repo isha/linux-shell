@@ -54,7 +54,7 @@ int main() {
 			else if (strcmp(cmdArray[0],"fork") == 0){
 				int pid = fork();
 				if(pid == 0){
-					 strcpy(prompt,"This is the modified path ok?"); 
+					 printf("\nHello, this is child.");
 					 return 0;
 				}
 			}
