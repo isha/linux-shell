@@ -48,6 +48,7 @@ int main() {
 			
 			numberOfCmds = parseString(inputString, &cmdArray);  
 			
+			//add an else if here for any accepted commands you are adding. See the current commands below for examples.
 			if (strcmp(cmdArray[0],"exit") == 0){
 				return 0;
 			}
