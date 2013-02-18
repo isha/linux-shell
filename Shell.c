@@ -16,7 +16,7 @@ int parseString(char* inputString, char*** cmdArray) {
   strcpy(buffer,inputString);
   (*cmdArray) = (char**) malloc(MAX_ARGUMENTS * sizeof(char**));
 
-  numberOfCmds = 0;  
+  numberOfCmds = 0;
   (*cmdArray)[numberOfCmds++] = strtok(buffer, DELIMITERS);
   
   while ((((*cmdArray)[numberOfCmds] = strtok(NULL, DELIMITERS)) != NULL) && (numberOfCmds < MAX_ARGUMENTS)) {
@@ -26,21 +26,27 @@ int parseString(char* inputString, char*** cmdArray) {
   return numberOfCmds;
 }
 
-
+void prompt() {
+	char* user = getenv( "USER" );
+	char* system = malloc( 20 );
+	char* path = getenv( "PWD" );
+	gethostname( system, 20 );
+	printf( "%s@%s: %s> ", user, system, path );
+}
 
 int main() {
 
   char inputString[MAX_STRING_LENGTH];
-  char prompt[1024];
+  //char prompt[1024];
   char **cmdArray;
   int numberOfCmds;
   int count;
   
-  gethostname(prompt,1024);
+  //gethostname(prompt,1024);
 
   while(1){
-		printf("%s:",prompt);
-		
+		//printf("%s:",prompt);
+		prompt();
 		gets(inputString);
 		
 		
