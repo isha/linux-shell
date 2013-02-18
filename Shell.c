@@ -75,6 +75,17 @@ int main() {
 				 }
 			}
 			
+			//RUN
+			else if (strcmp(cmdArray[0],"run") == 0){
+				if (numberOfCmds > 1){
+					int pid = fork();
+					if(pid == 0){
+						 system(strcat(strcat(getenv( "PWD" ),"/"), cmdArray[1]));
+						 return 0;
+					}
+				}
+			}
+			
 			else{
 				printf("Unrecognised command: \"%s\"\n",cmdArray[0]);
 			}
