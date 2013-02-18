@@ -37,19 +37,15 @@ void prompt() {
 int main() {
 
   char inputString[MAX_STRING_LENGTH];
-  //char prompt[1024];
   char **cmdArray;
   int numberOfCmds;
   int count;
   
-  //gethostname(prompt,1024);
 
   while(1){
-		//printf("%s:",prompt);
 		prompt();
 		gets(inputString);
-		
-		
+
 		if (strcmp(inputString,"") != 0){
 			
 			numberOfCmds = parseString(inputString, &cmdArray);  
@@ -65,14 +61,20 @@ int main() {
 					 return 0;
 				}
 			}
+			
+			//CD
 			else if (strcmp(cmdArray[0],"cd") == 0){
 				 if (numberOfCmds > 1){
-					strcpy(prompt,cmdArray[1]); 
+					 if(setenv("PWD", cmdArray[1], 1) == 0){
+					 }
+					 else{
+						printf("Invalid Path\n");
+					 }
 				 }
 				 else{
-					 printf("Not enough parameters passed to \"cd\"\n");
 				 }
 			}
+			
 			else{
 				printf("Unrecognised command: \"%s\"\n",cmdArray[0]);
 			}
