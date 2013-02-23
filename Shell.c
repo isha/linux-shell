@@ -28,7 +28,7 @@ int parseString(char* inputString, char*** cmdArray) {
 
 void prompt() {
 	char* user = getenv( "USER" );
-	char* system = malloc( 20 );
+	char* system = malloc( MAX_ARGUMENTS * sizeof(char) );
 	char* path = getenv( "PWD" );
 	gethostname( system, 20 );
 	printf( "%s@%s: %s> ", user, system, path );
@@ -83,6 +83,29 @@ int main() {
 						 system(strcat(strcat(getenv( "PWD" ),"/"), cmdArray[1]));
 						 return 0;
 					}
+				}
+			}
+
+			/*	SET ENVIRONMENT VARIABLE
+				usage: setenv [name] [value]
+			*/
+			else if (strcmp(cmdArray[0],"setenv") == 0){
+				if( numberOfCmds >= 3 ){
+					if( setenv( cmdArray[1], cmdArray[2], 1 ) != 0 ) printf("Failed to set environment variable.\n");
+				} else {
+					printf("Not enough arguments.\n");
+				}
+			}
+
+			/*	GET ENVIRONMENT VARIABLE
+				usage: getenv [name] [value]
+			*/
+			else if (strcmp(cmdArray[0],"getenv") == 0){
+				if( numberOfCmds >= 2 ){
+					if( getenv( cmdArray[1] ) != NULL ) printf( "%s : %s\n", cmdArray[1], getenv( cmdArray[1] ) );
+					else printf( "Environment variable %s does not exist.\n", cmdArray[1] );
+				} else {
+					printf("Not enough arguments.\n");
 				}
 			}
 			
