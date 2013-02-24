@@ -1,3 +1,5 @@
+#include <sys/stat.h>
+#include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -111,6 +113,34 @@ int main() {
 				if( numberOfCmds >= 2 ){
 					if( getenv( cmdArray[1] ) != NULL ) printf( "%s : %s\n", cmdArray[1], getenv( cmdArray[1] ) );
 					else printf( "Environment variable %s does not exist.\n", cmdArray[1] );
+				} else {
+					printf("Not enough arguments.\n");
+				}
+			}
+
+			/*	Make Directory
+				usage: mkdir [name] [value]
+			*/
+			else if (strcmp(cmdArray[0],"mkdir") == 0){
+				if( numberOfCmds >= 2 ){
+					//TODO: Add optional functionality
+
+					for( int i = 1; i < numberOfCmds; i++ ) {
+						if( strncmp(cmdArray[i], "-", 1) == 0 ) {
+							switch( cmdArray[i][1] ) {
+								case 'p':
+								break;
+								case 'v':
+								break;
+								case 'm':
+								break;
+								default:
+									printf("mkdir: invalid option -- \'%c\'", cmdArray[i][1] );
+								}
+						} else {
+							if( mkdir( cmdArray[i], S_IRWXU|S_IRGRP|S_IXGRP ) != 0 ) puts("mkdir: could not create directory.");
+						}
+					}
 				} else {
 					printf("Not enough arguments.\n");
 				}
