@@ -119,11 +119,15 @@ int main() {
 			}
 
 			/*	Make Directory
-				usage: mkdir [name] [value]
+				usage: mkdir [directoryName]
+				options:
+					-p : all nonexisted directories specified are created
+					-m : allow for permissions to be specified
+					-v : prints out all directories created
 			*/
 			else if (strcmp(cmdArray[0],"mkdir") == 0){
 				if( numberOfCmds >= 2 ){
-					//TODO: Add optional functionality
+					//TODO: Add optional functionality.
 
 					for( int i = 1; i < numberOfCmds; i++ ) {
 						if( strncmp(cmdArray[i], "-", 1) == 0 ) {
