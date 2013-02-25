@@ -70,6 +70,7 @@ int main() {
 			}
 			
 			/*	CHANGE PATH VARIABLE
+			    Append with / to start new directory or without to add to current directory.
 				usage: cd [directory] 
 			*/
 			else if (strcmp(cmdArray[0],"cd") == 0){
