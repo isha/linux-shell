@@ -33,17 +33,19 @@ int parseString(char* inputString, char*** cmdArray) {
 }
 
 void prompt() {
-	char* user = getenv("USER");
+	char* user = malloc( strlen(getenv("USER"))*sizeof(char) );
 	char* system = malloc( MAX_STRING_LENGTH * sizeof(char) );
 	char* home = malloc( MAX_STRING_LENGTH * sizeof(char) );
-	char* path = getenv( "PWD" );
+	char* path = malloc( strlen(getenv("PWD"))*sizeof(char) );
+	strcpy(user, getenv("USER"));
+	strcpy(path, getenv("PWD"));
 	gethostname( system, 20 );
 	sprintf( home, "/home/%s", user );
-	/*if( strncmp( home, path, strlen(home) ) == 0 ) {
+	if( strncmp( home, path, strlen(home) ) == 0 ) {
 		memmove( path, ( path + strlen( home ) - 1 ), ( strlen(path) - strlen(home) + 1 ) );
 		path[0] = '~';
 		path[strlen(path) - strlen(home) + 1] = '\0';
-	}*/
+	}
 	printf( "%s@%s:%s$ ", user, system, path );
 }
 
