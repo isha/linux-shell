@@ -52,6 +52,7 @@ int main() {
   
 
   while(1){
+	  
 		prompt();
 		gets(inputString);
 
@@ -59,19 +60,13 @@ int main() {
 			
 			numberOfCmds = parseString(inputString, &cmdArray);  
 			
-			//add an else if here for any accepted commands you are adding. See the current commands below for examples.
 			if (strcmp(cmdArray[0],"exit") == 0){
 				return 0;
 			}
-			else if (strcmp(cmdArray[0],"fork") == 0){
-				int pid = fork();
-				if(pid == 0){
-					 printf("\nHello, this is child.");
-					 return 0;
-				}
-			}
 			
-			//CD
+			/*	CHANGE PATH VARIABLE
+				usage: cd [directory] 
+			*/
 			else if (strcmp(cmdArray[0],"cd") == 0){
 				 if (numberOfCmds > 1){
 					 if(setenv("PWD", cmdArray[1], 1) == 0){
@@ -84,7 +79,9 @@ int main() {
 				 }
 			}
 			
-			//RUN
+			/*	RUN PROGRAM
+				usage: run [name] 
+			*/
 			else if (strcmp(cmdArray[0],"run") == 0){
 				if (numberOfCmds > 1){
 					int pid = fork();
@@ -99,7 +96,7 @@ int main() {
 				usage: setenv [name] [value]
 			*/
 			else if (strcmp(cmdArray[0],"setenv") == 0){
-				if( numberOfCmds >= 3 ){
+				if( numberOfCmds > 2 ){
 					if( setenv( cmdArray[1], cmdArray[2], 1 ) != 0 ) printf("Failed to set environment variable.\n");
 				} else {
 					printf("Not enough arguments.\n");
@@ -107,10 +104,10 @@ int main() {
 			}
 
 			/*	GET ENVIRONMENT VARIABLE
-				usage: getenv [name] [value]
+				usage: getenv [name]
 			*/
 			else if (strcmp(cmdArray[0],"getenv") == 0){
-				if( numberOfCmds >= 2 ){
+				if( numberOfCmds > 1 ){
 					if( getenv( cmdArray[1] ) != NULL ) printf( "%s : %s\n", cmdArray[1], getenv( cmdArray[1] ) );
 					else printf( "Environment variable %s does not exist.\n", cmdArray[1] );
 				} else {
@@ -126,10 +123,10 @@ int main() {
 					-v : prints out all directories created
 			*/
 			else if (strcmp(cmdArray[0],"mkdir") == 0){
-				if( numberOfCmds >= 2 ){
+				if( numberOfCmds > 1 ){
 					//TODO: Add optional functionality.
-
-					for( int i = 1; i < numberOfCmds; i++ ) {
+					int i;
+					for( i = 1; i < numberOfCmds; i++ ) {
 						if( strncmp(cmdArray[i], "-", 1) == 0 ) {
 							switch( cmdArray[i][1] ) {
 								case 'p':
