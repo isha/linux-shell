@@ -1,4 +1,8 @@
 #include <sys/stat.h>
+#include <sys/dir.h>
+#include <sys/param.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
@@ -35,11 +39,11 @@ void prompt() {
 	char* path = getenv( "PWD" );
 	gethostname( system, 20 );
 	sprintf( home, "/home/%s", user );
-	if( strncmp( home, path, strlen(home) ) == 0 ) {
+	/*if( strncmp( home, path, strlen(home) ) == 0 ) {
 		memmove( path, ( path + strlen( home ) - 1 ), ( strlen(path) - strlen(home) + 1 ) );
 		path[0] = '~';
 		path[strlen(path) - strlen(home) + 1] = '\0';
-	}
+	}*/
 	printf( "%s@%s:%s$ ", user, system, path );
 }
 
@@ -49,6 +53,7 @@ int main() {
   char **cmdArray;
   int numberOfCmds;
   int count;
+  extern  int alphasort();
   
 
   while(1){
@@ -74,8 +79,8 @@ int main() {
 					 else{
 						printf("Invalid Path\n");
 					 }
-				 }
-				 else{
+				 } else{
+					 printf("Not enough arguments.\n");
 				 }
 			}
 			
@@ -86,9 +91,11 @@ int main() {
 				if (numberOfCmds > 1){
 					int pid = fork();
 					if(pid == 0){
-						 system(strcat(strcat(getenv( "PWD" ),"/"), cmdArray[1]));
-						 return 0;
+						system(strcat(strcat(getenv( "PWD" ),"/"), cmdArray[1]));
+						return 0;
 					}
+				} else {
+					printf("Not enough arguments.\n");
 				}
 			}
 
@@ -146,6 +153,31 @@ int main() {
 					printf("Not enough arguments.\n");
 				}
 			}
+			
+			/*	LIST ALL FILES IN DIRECTORY
+				usage: dir 
+			*/
+			else if (strcmp(cmdArray[0],"dir") == 0){
+				
+				struct dirent **namelist;
+				int n;
+				char path[500];
+				sprintf(path, "%s/", getenv( "PWD" ));
+
+			    n = scandir(path, &namelist, 0, alphasort);
+				if (n < 0){
+					perror("scandir");
+					printf("%s\n", path);
+				}
+				else {
+					while (n > 2) {
+						n--;
+						printf("%s   ", namelist[n]->d_name);
+					}
+					printf("\n");
+					free(namelist);
+				}
+			}				
 			
 			else{
 				printf("Unrecognised command: \"%s\"\n",cmdArray[0]);
