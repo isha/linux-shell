@@ -74,11 +74,16 @@ int main() {
 			*/
 			else if (strcmp(cmdArray[0],"cd") == 0){
 				 if (numberOfCmds > 1){
-					 if(setenv("PWD", cmdArray[1], 1) == 0){
+					 if(strncmp(cmdArray[1], "/", 1) == 0){
+						 if(setenv("PWD", cmdArray[1], 1) == 0){
+						 }
+						 else{
+							printf("Invalid Path\n");
+						 }
+					 } else {
+						 strcat(strcat(getenv( "PWD" ), "/"), cmdArray[1]);
 					 }
-					 else{
-						printf("Invalid Path\n");
-					 }
+					 
 				 } else{
 					 printf("Not enough arguments.\n");
 				 }
@@ -172,7 +177,9 @@ int main() {
 				else {
 					while (n > 2) {
 						n--;
-						printf("%s   ", namelist[n]->d_name);
+						if(strncmp (namelist[n]->d_name,".",1) != 0){
+							printf("%s   ", namelist[n]->d_name);
+						}
 					}
 					printf("\n");
 					free(namelist);
