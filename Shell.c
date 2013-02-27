@@ -15,21 +15,21 @@
 //Splits the input string into segments depending on DELIMITERS, passes all parts into the array cmdArray, and returns the number of segments in the array.
 int parseString(char* inputString, char*** cmdArray) {
 
-  char* buffer;
-  int numberOfCmds;
+	char* buffer;
+	int numberOfCmds;
 
-  buffer = (char*) malloc(strlen(inputString) * sizeof(char));
-  strcpy(buffer,inputString);
-  (*cmdArray) = (char**) malloc(MAX_ARGUMENTS * sizeof(char**));
+	buffer = (char*) malloc(strlen(inputString) * sizeof(char));
+	strcpy(buffer,inputString);
+	(*cmdArray) = (char**) malloc(MAX_ARGUMENTS * sizeof(char**));
 
-  numberOfCmds = 0;
-  (*cmdArray)[numberOfCmds++] = strtok(buffer, DELIMITERS);
+	numberOfCmds = 0;
+	(*cmdArray)[numberOfCmds++] = strtok(buffer, DELIMITERS);
   
-  while ((((*cmdArray)[numberOfCmds] = strtok(NULL, DELIMITERS)) != NULL) && (numberOfCmds < MAX_ARGUMENTS)) {
-	++numberOfCmds;
+	while ((((*cmdArray)[numberOfCmds] = strtok(NULL, DELIMITERS)) != NULL) && (numberOfCmds < MAX_ARGUMENTS)) {
+		++numberOfCmds;
   }
 
-  return numberOfCmds;
+return numberOfCmds;
 }
 
 void prompt() {
@@ -51,188 +51,192 @@ void prompt() {
 
 int main() {
 
-  char inputString[MAX_STRING_LENGTH];
-  char **cmdArray;
-  int numberOfCmds;
-  int count;
-  extern  int alphasort();
+	char inputString[MAX_STRING_LENGTH];
+	char **cmdArray;
+	int numberOfCmds;
+	int count;
+	extern int alphasort();
   
 
-  while(1){
-	  
-	    free(cmdArray);
-		
+	while(1){
+
 		prompt();
 		gets(inputString);
 
 		if (strcmp(inputString,"") != 0){
-			
-			numberOfCmds = parseString(inputString, &cmdArray);  
-			
-			if (strcmp(cmdArray[0],"exit") == 0){
-				return 0;
+
+			numberOfCmds = parseString(inputString, &cmdArray);
+
+		if (strcmp(cmdArray[0],"exit") == 0){
+		return 0;
+		}
+
+/* CHANGE PATH VARIABLE
+Append with / to start new directory or without to add to current directory.
+usage: cd [directory]
+*/
+		else if (strcmp(cmdArray[0],"cd") == 0){
+			if (numberOfCmds > 1){
+                		char *pwd_string;
+                        	char *finalDir;
+				int numLength;
+				char *token;
+				token = getenv("HOME");
+                       		pwd_string = getenv("PWD");        
+                       		if (strcmp(cmdArray[1], "..") == 0){
+					int x;
+					x = strlen(pwd_string);
+					while(strcmp(pwd_string[x], "/") != 0){
+						x --;
+					}
+					int i;
+					for (i = 0; (i < x); i++){
+						finalDir[i] = pwd_string[i];
+					}
+                		//int i;
+                           	/*for (i = MAX_STRING_LENGTH; "/"; i--){
+                               		if (strcmp(pwd_string[i], "/") == 0){
+                                   		int x;
+                                   		for (x = 0; x < (i - 1); x++){
+                                       			finalDir[x] = pwd_string[x];
+                                   		}
+                                   	//finalDir = pwd_string;
+                        		break;
+                               		}
+               			}*/
+                       		}
+				else if (strcmp(cmdArray[1], "~") == 0){
+					finalDir = token;
+				}
+				else if (strcmp(cmdArray[1], "/") == 0){
+					finalDir = "/";
+				}
+				else if (strcmp(cmdArray[1], ".") == 0){
+					finalDir = getenv("PWD");
+				}
+				else{
+					pwd_string = strcat(strcat(getenv( "PWD" ), "/"), cmdArray[1]);
+					finalDir = pwd_string;
+				}
+			if (chdir(finalDir) == -1) printf("cd: invalid directory");
+			else setenv("PWD", finalDir, 1);
+	  		}
+	
+               else{
+                     printf("Not enough arguments.\n");
+               }
+	}
+/* RUN PROGRAM IN CURRENT WORKING DIRECTORY
+usage: run [name] [arguments]
+*/
+	else if (strcmp(cmdArray[0],"run") == 0){
+		if (numberOfCmds > 1){
+			int pid = fork();
+			if(pid == 0){
+				int i;
+				char* args[numberOfCmds-1];
+				for( i = 0; i < numberOfCmds; i++ ) args[i] = cmdArray[i+1];
+					execv( strcat(strcat(getenv( "PWD" ),"/"), cmdArray[1] ), args );
+			} 
+			else if( pid == -1 ) {
+				printf( "%s: forking failed\n", cmdArray[0] );
+			} 
+			else {
+				wait(NULL);
 			}
-			
-			/*	CHANGE PATH VARIABLE
-			    Append with / to start new directory or without to add to current directory.
-				usage: cd [directory] 
-			*/
-			else if (strcmp(cmdArray[0],"cd") == 0){
-				 if (numberOfCmds > 1){
-					 if(strncmp(cmdArray[1], "/", 1) == 0){
-						 if(setenv("PWD", cmdArray[1], 1) == 0){
-						 }
-						 else{
-							printf("Invalid Path\n");
-						 }
-					 } else {
-						 strcat(strcat(getenv( "PWD" ), "/"), cmdArray[1]);
-					 }
-					 
-				 } else{
-					 printf("Not enough arguments.\n");
-				 }
+		} 
+		else {
+			printf("Not enough arguments.\n");
+		}
+	}
+
+/* SET ENVIRONMENT VARIABLE
+usage: setenv [name] [value]
+*/
+	else if (strcmp(cmdArray[0],"setenv") == 0){
+		if( numberOfCmds > 2 ){
+			if( setenv( cmdArray[1], cmdArray[2], 1 ) != 0 ) printf("Failed to set environment variable.\n");
+		} 
+		else {
+			printf("Not enough arguments.\n");
+		}
+	}
+
+/* GET ENVIRONMENT VARIABLE
+usage: getenv [name]
+*/
+	else if (strcmp(cmdArray[0],"getenv") == 0){
+		if( numberOfCmds > 1 ){
+			if( getenv( cmdArray[1] ) != NULL ) printf( "%s : %s\n", cmdArray[1], getenv( cmdArray[1] ) );
+			else printf( "Environment variable %s does not exist.\n", cmdArray[1] );
+		}
+		else {
+			printf("Not enough arguments.\n");
+		}
+	}
+
+/* LIST ALL FILES IN DIRECTORY
+usage: dir
+*/
+	else if (strcmp(cmdArray[0],"dir") == 0){
+
+		struct dirent **namelist;
+		int n;
+		char path[500];
+		sprintf(path, "%s/", getenv( "PWD" ));
+
+		n = scandir(path, &namelist, 0, alphasort);
+		if (n < 0){
+			perror("scandir");
+			printf("%s\n", path);
+		}
+		else {
+			while (n > 2) {
+				n--;
+				if(strncmp (namelist[n]->d_name,".",1) != 0){
+					printf("%s ", namelist[n]->d_name);
+				}
 			}
-			
-			/*	RUN PROGRAM IN CURRENT WORKING DIRECTORY
-				usage: run [name] [arguments]
-			*/
-			else if (strcmp(cmdArray[0],"run") == 0){
-				if (numberOfCmds > 1){
-					int pid = fork();
+			printf("\n");
+			free(namelist);
+		}
+	}	
+
+/* EXECUTE COMMAND
+usage: [command] { arguments }
+*/
+	else {
+		int isProgram = 0;
+		int numPaths = 0;
+		int j = 0;
+		char* pathVar = malloc( sizeof(char)*strlen(getenv("PATH")) );
+		char** paths;
+
+		strcpy( pathVar, getenv("PATH") );
+
+		numPaths = parseString( pathVar, &paths );
+		for( j = 0; j < numPaths; j++ ) {
+			char path[strlen(paths[j])];
+			char *filename = strcat( strcat( strcpy( path, paths[j] ), "/" ), cmdArray[0] );
+			if( access( filename, F_OK ) == 0 ) {
+				int pid = fork();
 					if(pid == 0){
-						int i;
-						char* args[numberOfCmds-1];
-						for( i = 0; i < numberOfCmds; i++ ) args[i] = cmdArray[i+1];
-						execv( strcat(strcat(getenv( "PWD" ),"/"), cmdArray[1] ), args );
-					} else if( pid == -1 ) {
+						execv( filename, cmdArray );
+					}
+					else if( pid == -1 ) {
 						printf( "%s: forking failed\n", cmdArray[0] );
-					} else {
+					}
+					else {
 						wait(NULL);
 					}
-				} else {
-					printf("Not enough arguments.\n");
-				}
-			}
-
-			/*	SET ENVIRONMENT VARIABLE
-				usage: setenv [name] [value]
-			*/
-			else if (strcmp(cmdArray[0],"setenv") == 0){
-				if( numberOfCmds > 2 ){
-					if( setenv( cmdArray[1], cmdArray[2], 1 ) != 0 ) printf("Failed to set environment variable.\n");
-				} else {
-					printf("Not enough arguments.\n");
-				}
-			}
-
-
-                        /*      DELETE ENVIRONMENT VARIABLE
-                                usage: unsetenv [name]
-                        */
-                        else if (strcmp(cmdArray[0],"unsetenv") == 0){
-                                if( numberOfCmds > 1 ){
-                                        if( unsetenv(cmdArray[1]) != 0 ) printf("Failed to set environment variable.\n");
-                                } else {
-                                        printf("Not enough arguments.\n");
-                                }
-                        }
-
-			/*	GET ENVIRONMENT VARIABLE
-				usage: getenv [name]
-			*/
-			else if (strcmp(cmdArray[0],"getenv") == 0){
-				if( numberOfCmds > 1 ){
-					if( getenv( cmdArray[1] ) != NULL ) printf( "%s : %s\n", cmdArray[1], getenv( cmdArray[1] ) );
-					else printf( "Environment variable %s does not exist.\n", cmdArray[1] );
-				} else {
-					printf("Not enough arguments.\n");
-				}
-			}
-
-		  	/*      PRINT HELP 
-                                usage: help
-                        */
-                        else if (strcmp(cmdArray[0],"help") == 0){
-
-				printf("\nhelp");
-				printf("\n\ndir\t\t:\tList all files in directory");
-				printf("\nUsage\t\t:\tdir\n"); 
-                                printf("\n\ncd\t\t:\tChange present working directory");
-                                printf("\nUsage\t\t:\tcd [path to new directory]\n");
-                                printf("\n\ngetenv\t\t:\tShows the value of the specified Environment Variable");
-                                printf("\nUsage\t\t:\tgetenv [name]\n");
-                                printf("\n\nsetenv\t\t:\tSets the value of an Environment Variable");
-                                printf("\nUsage\t\t:\tsetenv [name] [value]\n");
-                                printf("\n\nunsetenv\t:\tDelete an Environment Variable");
-                                printf("\nUsage\t\t:\tunsetenv [name]\n");
-                                printf("\n\nrun\t\t:\tRun an executable");
-                                printf("\nUsage\t\t:\trun [executable] [arguments]\n");
-
-
-
-                        }
-
-	
-			/*	LIST ALL FILES IN DIRECTORY
-				usage: dir 
-			*/
-			else if (strcmp(cmdArray[0],"dir") == 0){
-				
-				struct dirent **namelist;
-				int n;
-				char path[500];
-				sprintf(path, "%s/", getenv( "PWD" ));
-
-			    n = scandir(path, &namelist, 0, alphasort);
-				if (n < 0){
-					perror("scandir");
-					printf("%s\n", path);
-				}
-				else {
-					while (n > 2) {
-						n--;
-						if(strncmp (namelist[n]->d_name,".",1) != 0){
-							printf("%s   ", namelist[n]->d_name);
-						}
-					}
-					printf("\n");
-					free(namelist);
-				}
-			}				
-			
-			/*	EXECUTE COMMAND
-				usage: [command] { arguments }
-			*/
-			else {
-				int isProgram = 0;
-				int numPaths = 0;
-				int j = 0;
-				char* pathVar = malloc( sizeof(char)*strlen(getenv("PATH")) );
-				char** paths;
-				
-				strcpy( pathVar, getenv("PATH") );
-
-				numPaths = parseString( pathVar, &paths );
-				for( j = 0; j < numPaths; j++ ) {
-					char path[strlen(paths[j])];
-					char *filename = strcat( strcat( strcpy( path, paths[j] ), "/" ), cmdArray[0] );
-					if( access( filename, F_OK ) == 0 ) {
-						int pid = fork();
-						if(pid == 0){
-							execv( filename, cmdArray );
-						} else if( pid == -1 ) {
-							printf( "%s: forking failed\n", cmdArray[0] );
-						} else {
-							wait(NULL);
-						}
-						isProgram = 1;
-						break;
-					}
-				}
-				if( !isProgram ) printf( "%s: command not found\n", cmdArray[0] );
+			isProgram = 1;
+			break;
 			}
 		}
+		if( !isProgram ) printf( "%s: command not found\n", cmdArray[0] );
+
+	}
+}
   }
   
   return 0;
