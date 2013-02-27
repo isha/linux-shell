@@ -36,7 +36,7 @@ return numberOfCmds;
 void prompt() {
 	char* user = malloc( strlen(getenv("USER"))*sizeof(char) );
 	char* system = malloc( MAX_STRING_LENGTH * sizeof(char) );
-	char* home = malloc( MAX_STRING_LENGTH * sizeof(char) );
+	char* home = malloc( strlen(getenv("HOME")) );
 	char* path = malloc( strlen(getenv("PWD"))*sizeof(char) );
 	strcpy(user, getenv("USER"));
 	strcpy(path, getenv("PWD"));
@@ -88,13 +88,13 @@ usage: cd [directory]
                 }
                 strcat( directory, cmdArray[1] );
 
-                if ( chdir( directory ) == -1 ) printf("cd: invalid directory");
+                if ( chdir( directory ) == -1 ) printf("cd: invalid directory\n");
 				else {
 					getcwd(cwd, sizeof(cwd));
 					setenv("PWD", cwd, 1);
 				}
 	  		} else {
-                if ( chdir( home ) == -1 ) printf("cd: invalid directory");
+                if ( chdir( home ) == -1 ) printf("cd: invalid directory\n");
 				else {
 					getcwd(cwd, sizeof(cwd));
 					setenv("PWD", cwd, 1);
