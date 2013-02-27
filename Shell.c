@@ -71,60 +71,34 @@ int main() {
 		return 0;
 		}
 
-/* CHANGE PATH VARIABLE
-Append with / to start new directory or without to add to current directory.
+/* CHANGE CURRENT WORKING DIRECTORY
 usage: cd [directory]
 */
 		else if (strcmp(cmdArray[0],"cd") == 0){
+			char home[MAX_STRING_LENGTH] = "";
+            char directory[MAX_STRING_LENGTH] = "";
+            char cwd[MAX_STRING_LENGTH] = "";
+            strcpy( home, getenv("HOME") );
+
 			if (numberOfCmds > 1){
-                		char *pwd_string;
-                        	char *finalDir;
-				int numLength;
-				char *token;
-				token = getenv("HOME");
-                       		pwd_string = getenv("PWD");        
-                       		if (strcmp(cmdArray[1], "..") == 0){
-					int x;
-					x = strlen(pwd_string);
-					while(strcmp(pwd_string[x], "/") != 0){
-						x --;
-					}
-					int i;
-					for (i = 0; (i < x); i++){
-						finalDir[i] = pwd_string[i];
-					}
-                		//int i;
-                           	/*for (i = MAX_STRING_LENGTH; "/"; i--){
-                               		if (strcmp(pwd_string[i], "/") == 0){
-                                   		int x;
-                                   		for (x = 0; x < (i - 1); x++){
-                                       			finalDir[x] = pwd_string[x];
-                                   		}
-                                   	//finalDir = pwd_string;
-                        		break;
-                               		}
-               			}*/
-                       		}
-				else if (strcmp(cmdArray[1], "~") == 0){
-					finalDir = token;
+                if(strncmp(cmdArray[1], "~", 1) == 0) {
+                	memmove( cmdArray[1], cmdArray[1]+1, strlen(cmdArray[1]) );
+                	strcpy( directory, home );
+                }
+                strcat( directory, cmdArray[1] );
+
+                if ( chdir( directory ) == -1 ) printf("cd: invalid directory");
+				else {
+					getcwd(cwd, sizeof(cwd));
+					setenv("PWD", cwd, 1);
 				}
-				else if (strcmp(cmdArray[1], "/") == 0){
-					finalDir = "/";
+	  		} else {
+                if ( chdir( home ) == -1 ) printf("cd: invalid directory");
+				else {
+					getcwd(cwd, sizeof(cwd));
+					setenv("PWD", cwd, 1);
 				}
-				else if (strcmp(cmdArray[1], ".") == 0){
-					finalDir = getenv("PWD");
-				}
-				else{
-					pwd_string = strcat(strcat(getenv( "PWD" ), "/"), cmdArray[1]);
-					finalDir = pwd_string;
-				}
-			if (chdir(finalDir) == -1) printf("cd: invalid directory");
-			else setenv("PWD", finalDir, 1);
-	  		}
-	
-               else{
-                     printf("Not enough arguments.\n");
-               }
+            }
 	}
 /* RUN PROGRAM IN CURRENT WORKING DIRECTORY
 usage: run [name] [arguments]
