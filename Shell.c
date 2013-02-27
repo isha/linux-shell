@@ -124,6 +124,18 @@ int main() {
 				}
 			}
 
+
+                        /*      DELETE ENVIRONMENT VARIABLE
+                                usage: unsetenv [name]
+                        */
+                        else if (strcmp(cmdArray[0],"unsetenv") == 0){
+                                if( numberOfCmds > 1 ){
+                                        if( unsetenv(cmdArray[1]) != 0 ) printf("Failed to set environment variable.\n");
+                                } else {
+                                        printf("Not enough arguments.\n");
+                                }
+                        }
+
 			/*	GET ENVIRONMENT VARIABLE
 				usage: getenv [name]
 			*/
@@ -142,16 +154,18 @@ int main() {
                         else if (strcmp(cmdArray[0],"help") == 0){
 
 				printf("\nhelp");
-				printf("\n\ndir\t:\tList all files in directory");
-				printf("\nUsage\t:\tdir\n"); 
-                                printf("\n\ngetenv\t:\tShows the value of the specified Environment Variable");
-                                printf("\nUsage\t:\tgetenv [name]\n");
-                                printf("\n\nsetenv\t:\tSets the value of an Environment Variable");
-                                printf("\nUsage\t:\tsetenv [name] [value]\n");
-                                printf("\n\ncd\t:\tChange present working directory");
-                                printf("\nUsage\t:\tcd [path to new directory]\n");
-                                printf("\n\nrun\t:\tRun an executable");
-                                printf("\nUsage\t:\trun [executable] [arguments]\n");
+				printf("\n\ndir\t\t:\tList all files in directory");
+				printf("\nUsage\t\t:\tdir\n"); 
+                                printf("\n\ncd\t\t:\tChange present working directory");
+                                printf("\nUsage\t\t:\tcd [path to new directory]\n");
+                                printf("\n\ngetenv\t\t:\tShows the value of the specified Environment Variable");
+                                printf("\nUsage\t\t:\tgetenv [name]\n");
+                                printf("\n\nsetenv\t\t:\tSets the value of an Environment Variable");
+                                printf("\nUsage\t\t:\tsetenv [name] [value]\n");
+                                printf("\n\nunsetenv\t:\tDelete an Environment Variable");
+                                printf("\nUsage\t\t:\tunsetenv [name]\n");
+                                printf("\n\nrun\t\t:\tRun an executable");
+                                printf("\nUsage\t\t:\trun [executable] [arguments]\n");
 
 
 
