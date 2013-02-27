@@ -111,7 +111,8 @@ usage: run [name] [arguments]
 				int i;
 				char* args[numberOfCmds-1];
 				for( i = 0; i < numberOfCmds; i++ ) args[i] = cmdArray[i+1];
-					execv( strcat(strcat(getenv( "PWD" ),"/"), cmdArray[1] ), args );
+					char* pwd = malloc( strlen(getenv("PWD")) );
+					execv( strcat(strcat(strcpy( pwd, getenv( "PWD" ) ),"/"), cmdArray[1] ), args );
 			} 
 			else if( pid == -1 ) {
 				printf( "%s: forking failed\n", cmdArray[0] );
