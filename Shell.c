@@ -135,7 +135,29 @@ int main() {
 					printf("Not enough arguments.\n");
 				}
 			}
-			
+
+		  	/*      PRINT HELP 
+                                usage: help
+                        */
+                        else if (strcmp(cmdArray[0],"help") == 0){
+
+				printf("\nhelp");
+				printf("\n\ndir\t:\tList all files in directory");
+				printf("\nUsage\t:\tdir\n"); 
+                                printf("\n\ngetenv\t:\tShows the value of the specified Environment Variable");
+                                printf("\nUsage\t:\tgetenv [name]\n");
+                                printf("\n\nsetenv\t:\tSets the value of an Environment Variable");
+                                printf("\nUsage\t:\tsetenv [name] [value]\n");
+                                printf("\n\ncd\t:\tChange present working directory");
+                                printf("\nUsage\t:\tcd [path to new directory]\n");
+                                printf("\n\nrun\t:\tRun an executable");
+                                printf("\nUsage\t:\trun [executable] [arguments]\n");
+
+
+
+                        }
+
+	
 			/*	LIST ALL FILES IN DIRECTORY
 				usage: dir 
 			*/
