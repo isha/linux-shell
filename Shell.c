@@ -10,7 +10,7 @@
 
 #define MAX_STRING_LENGTH 255
 #define MAX_ARGUMENTS 100
-#define DELIMITERS " \t"
+#define DELIMITERS " \t:"
 
 //Splits the input string into segments depending on DELIMITERS, passes all parts into the array cmdArray, and returns the number of segments in the array.
 int parseString(char* inputString, char*** cmdArray) {
@@ -92,15 +92,21 @@ int main() {
 				 }
 			}
 			
-			/*	RUN PROGRAM
-				usage: run [name] 
+			/*	RUN PROGRAM IN CURRENT WORKING DIRECTORY
+				usage: run [name] [arguments]
 			*/
 			else if (strcmp(cmdArray[0],"run") == 0){
 				if (numberOfCmds > 1){
 					int pid = fork();
 					if(pid == 0){
-						system(strcat(strcat(getenv( "PWD" ),"/"), cmdArray[1]));
-						return 0;
+						int i;
+						char* args[numberOfCmds-1];
+						for( i = 0; i < numberOfCmds; i++ ) args[i] = cmdArray[i+1];
+						execv( strcat(strcat(getenv( "PWD" ),"/"), cmdArray[1] ), args );
+					} else if( pid == -1 ) {
+						printf( "%s: forking failed\n", cmdArray[0] );
+					} else {
+						wait(NULL);
 					}
 				} else {
 					printf("Not enough arguments.\n");
@@ -125,38 +131,6 @@ int main() {
 				if( numberOfCmds > 1 ){
 					if( getenv( cmdArray[1] ) != NULL ) printf( "%s : %s\n", cmdArray[1], getenv( cmdArray[1] ) );
 					else printf( "Environment variable %s does not exist.\n", cmdArray[1] );
-				} else {
-					printf("Not enough arguments.\n");
-				}
-			}
-
-			/*	Make Directory
-				usage: mkdir [directoryName]
-				options:
-					-p : all nonexisted directories specified are created
-					-m : allow for permissions to be specified
-					-v : prints out all directories created
-			*/
-			else if (strcmp(cmdArray[0],"mkdir") == 0){
-				if( numberOfCmds > 1 ){
-					//TODO: Add optional functionality.
-					int i;
-					for( i = 1; i < numberOfCmds; i++ ) {
-						if( strncmp(cmdArray[i], "-", 1) == 0 ) {
-							switch( cmdArray[i][1] ) {
-								case 'p':
-								break;
-								case 'v':
-								break;
-								case 'm':
-								break;
-								default:
-									printf("mkdir: invalid option -- \'%c\'", cmdArray[i][1] );
-								}
-						} else {
-							if( mkdir( cmdArray[i], S_IRWXU|S_IRGRP|S_IXGRP ) != 0 ) puts("mkdir: could not create directory.");
-						}
-					}
 				} else {
 					printf("Not enough arguments.\n");
 				}
@@ -189,8 +163,36 @@ int main() {
 				}
 			}				
 			
-			else{
-				printf("Unrecognised command: \"%s\"\n",cmdArray[0]);
+			/*	EXECUTE COMMAND
+				usage: [command] { arguments }
+			*/
+			else {
+				int isProgram = 0;
+				int numPaths = 0;
+				int j = 0;
+				char* pathVar = malloc( sizeof(char)*strlen(getenv("PATH")) );
+				char** paths;
+				
+				strcpy( pathVar, getenv("PATH") );
+
+				numPaths = parseString( pathVar, &paths );
+				for( j = 0; j < numPaths; j++ ) {
+					char path[strlen(paths[j])];
+					char *filename = strcat( strcat( strcpy( path, paths[j] ), "/" ), cmdArray[0] );
+					if( access( filename, F_OK ) == 0 ) {
+						int pid = fork();
+						if(pid == 0){
+							execv( filename, cmdArray );
+						} else if( pid == -1 ) {
+							printf( "%s: forking failed\n", cmdArray[0] );
+						} else {
+							wait(NULL);
+						}
+						isProgram = 1;
+						break;
+					}
+				}
+				if( !isProgram ) printf( "%s: command not found\n", cmdArray[0] );
 			}
 		}
   }
