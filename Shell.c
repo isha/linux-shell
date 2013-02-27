@@ -60,6 +60,8 @@ int main() {
 
   while(1){
 	  
+	    free(cmdArray);
+		
 		prompt();
 		gets(inputString);
 
