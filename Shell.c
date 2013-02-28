@@ -10,10 +10,11 @@
 
 #define MAX_STRING_LENGTH 255
 #define MAX_ARGUMENTS 100
-#define DELIMITERS " \t:"
+#define COMMAND_DELIMETERS " \t"
+#define PATH_DELIMETERS ":"
 
 //Splits the input string into segments depending on DELIMITERS, passes all parts into the array cmdArray, and returns the number of segments in the array.
-int parseString(char* inputString, char*** cmdArray) {
+int parseString(char* inputString, char*** cmdArray, char* delimeters) {
 
 	char* buffer;
 	int numberOfCmds;
@@ -23,9 +24,9 @@ int parseString(char* inputString, char*** cmdArray) {
 	(*cmdArray) = (char**) malloc(MAX_ARGUMENTS * sizeof(char**));
 
 	numberOfCmds = 0;
-	(*cmdArray)[numberOfCmds++] = strtok(buffer, DELIMITERS);
+	(*cmdArray)[numberOfCmds++] = strtok(buffer, delimeters);
   
-	while ((((*cmdArray)[numberOfCmds] = strtok(NULL, DELIMITERS)) != NULL) && (numberOfCmds < MAX_ARGUMENTS)) {
+	while ((((*cmdArray)[numberOfCmds] = strtok(NULL, delimeters)) != NULL) && (numberOfCmds < MAX_ARGUMENTS)) {
 		++numberOfCmds;
   }
 
@@ -65,7 +66,7 @@ int main() {
 
 		if (strcmp(inputString,"") != 0){
 
-			numberOfCmds = parseString(inputString, &cmdArray);
+			numberOfCmds = parseString(inputString, &cmdArray, COMMAND_DELIMETERS);
 
 		if (strcmp(cmdArray[0],"exit") == 0){
 		return 0;
@@ -188,7 +189,7 @@ usage: [command] { arguments }
 
 		strcpy( pathVar, getenv("PATH") );
 
-		numPaths = parseString( pathVar, &paths );
+		numPaths = parseString( pathVar, &paths, PATH_DELIMETERS );
 		for( j = 0; j < numPaths; j++ ) {
 			char path[strlen(paths[j])];
 			char *filename = strcat( strcat( strcpy( path, paths[j] ), "/" ), cmdArray[0] );
