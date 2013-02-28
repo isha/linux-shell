@@ -116,10 +116,11 @@ usage: run [name] [arguments]
 			} 
 			else if( pid == -1 ) {
 				printf( "%s: forking failed\n", cmdArray[0] );
-			} 
-			else {
-				wait(NULL);
 			}
+                        else if (strcmp(cmdArray[numberOfCmds-1], "&" )!=0) {
+                                // wait if last character not equal to &
+                                wait(NULL);
+                        } 
 		} 
 		else {
 			printf("Not enough arguments.\n");
